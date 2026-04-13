@@ -1,15 +1,17 @@
 import { Outlet } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
+import TopBar from "./TopBar";
 
 export default function AppLayout() {
   return (
-    <div dir="rtl" className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       <AppSidebar />
-      <main className="mr-60 min-h-screen">
-        <div className="p-6">
+      <div className="ml-56 min-h-screen flex flex-col">
+        <TopBar />
+        <main className="flex-1 p-6">
           <Outlet />
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

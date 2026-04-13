@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -8,52 +8,88 @@ import {
   ListTodo,
   Shield,
   LogOut,
+  Package,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { to: "/dashboard", label: "لوحة التحكم", icon: LayoutDashboard },
-  { to: "/customers", label: "العملاء", icon: Users },
-  { to: "/orders", label: "الطلبات", icon: ShoppingCart },
-  { to: "/support", label: "الدعم", icon: Headphones },
-  { to: "/crm-queue", label: "المتابعات", icon: PhoneCall },
-  { to: "/tasks", label: "المهام", icon: ListTodo },
-  { to: "/admin/users", label: "إدارة المستخدمين", icon: Shield },
+const navSections = [
+  {
+    label: "الرئيسية",
+    items: [
+      { to: "/dashboard", label: "لوحة التحكم", icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: "المبيعات",
+    items: [
+      { to: "/customers", label: "العملاء", icon: Users },
+      { to: "/orders", label: "الطلبات", icon: ShoppingCart },
+    ],
+  },
+  {
+    label: "العمليات",
+    items: [
+      { to: "/support", label: "الدعم", icon: Headphones },
+      { to: "/crm-queue", label: "المتابعات", icon: PhoneCall },
+      { to: "/tasks", label: "المهام", icon: ListTodo },
+    ],
+  },
+  {
+    label: "الإدارة",
+    items: [
+      { to: "/admin/users", label: "المستخدمين", icon: Shield },
+    ],
+  },
 ];
 
 export default function AppSidebar() {
+  const navigate = useNavigate();
+
   return (
-    <aside className="fixed inset-y-0 right-0 z-30 flex w-60 flex-col bg-sidebar text-sidebar-foreground border-l border-sidebar-border">
+    <aside className="fixed inset-y-0 left-0 z-30 flex w-56 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
       {/* Logo */}
-      <div className="flex h-16 items-center justify-center border-b border-sidebar-border px-4">
-        <h1 className="text-lg font-bold tracking-tight">قطوف الخير</h1>
+      <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
+        <Package className="h-6 w-6 text-sidebar-primary" />
+        <span className="text-base font-bold tracking-tight">قطوف الخير</span>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-              )
-            }
-          >
-            <item.icon className="h-5 w-5 shrink-0" />
-            <span>{item.label}</span>
-          </NavLink>
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-4">
+        {navSections.map((section) => (
+          <div key={section.label}>
+            <p className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+              {section.label}
+            </p>
+            <div className="space-y-0.5">
+              {section.items.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                      isActive
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                        : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    )
+                  }
+                >
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-sidebar-border p-3">
-        <button className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors">
-          <LogOut className="h-5 w-5 shrink-0" />
+      <div className="border-t border-sidebar-border p-2">
+        <button
+          onClick={() => navigate("/login")}
+          className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
           <span>تسجيل الخروج</span>
         </button>
       </div>
