@@ -10,31 +10,61 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
-      presenter_notes: {
+      staff_users: {
         Row: {
-          content: string
+          auth_user_id: string
           created_at: string
+          email: string
+          full_name: string
           id: string
-          slide_id: string
+          is_active: boolean
+          phone: string | null
+          role: Database["public"]["Enums"]["app_role"]
           updated_at: string
         }
         Insert: {
-          content?: string
+          auth_user_id: string
           created_at?: string
+          email: string
+          full_name: string
           id?: string
-          slide_id: string
+          is_active?: boolean
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
         Update: {
-          content?: string
+          auth_user_id?: string
           created_at?: string
+          email?: string
+          full_name?: string
           id?: string
-          slide_id?: string
+          is_active?: boolean
+          phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -43,10 +73,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_staff_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "admin"
+        | "sales"
+        | "customer_service"
+        | "operations"
+        | "manager"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -173,6 +218,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "sales", "customer_service", "operations", "manager"],
+    },
   },
 } as const
