@@ -54,10 +54,10 @@ export default function Orders() {
         query = query.or(`order_number.ilike.%${search.trim()}%`);
       }
       if (statusFilter !== "all") {
-        query = query.eq("order_status", statusFilter);
+        query = query.eq("order_status", statusFilter as OrderStatus);
       }
       if (paymentFilter !== "all") {
-        query = query.eq("payment_status", paymentFilter);
+        query = query.eq("payment_status", paymentFilter as PaymentStatus);
       }
 
       const { data, error } = await query.limit(100);

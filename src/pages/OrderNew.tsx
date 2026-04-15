@@ -159,7 +159,7 @@ export default function OrderNew() {
               <Input placeholder="01XXXXXXXXX" className="font-mono flex-1" value={phone} onChange={(e) => setPhone(e.target.value)} onKeyDown={(e) => e.key === "Enter" && lookupCustomer()} />
               <Button variant="outline" onClick={lookupCustomer}>بحث</Button>
             </div>
-            {customerName && <p className="text-sm text-green-600 font-medium">✓ {customerName}</p>}
+            {customerName && <p className="text-sm text-primary font-medium">✓ {customerName}</p>}
           </div>
 
           {/* Source */}
