@@ -191,7 +191,7 @@ export default function OrderNew() {
 
           {customerNotFound && (
             <div className="border rounded-md p-4 space-y-3 bg-muted/30">
-              <div className="flex items-center gap-2 text-sm font-medium text-orange-600">
+              <div className="flex items-center gap-2 text-sm font-medium text-destructive">
                 <UserPlus className="h-4 w-4" />
                 العميل غير موجود — أدخل البيانات لإنشائه
               </div>

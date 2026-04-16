@@ -96,7 +96,8 @@ export default function OrderDetail() {
       if (oldValue === newValue) return;
 
       // Update order
-      const { error } = await supabase.from("orders").update({ [field]: newValue }).eq("id", id!);
+      const updatePayload: Record<string, string> = { [field]: newValue };
+      const { error } = await supabase.from("orders").update(updatePayload as any).eq("id", id!);
       if (error) throw error;
 
       // Log history
