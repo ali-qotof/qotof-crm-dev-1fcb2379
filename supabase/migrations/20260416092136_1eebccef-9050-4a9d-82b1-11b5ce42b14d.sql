@@ -1,0 +1,1 @@
+ALTER TABLE public.orders ADD COLUMN source_detail text;

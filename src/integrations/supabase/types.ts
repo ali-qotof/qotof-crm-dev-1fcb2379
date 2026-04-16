@@ -167,6 +167,7 @@ export type Database = {
           order_status: Database["public"]["Enums"]["order_status"]
           payment_status: Database["public"]["Enums"]["payment_status"]
           source: Database["public"]["Enums"]["order_source"]
+          source_detail: string | null
           total_amount: number
           updated_at: string
         }
@@ -181,6 +182,7 @@ export type Database = {
           order_status?: Database["public"]["Enums"]["order_status"]
           payment_status?: Database["public"]["Enums"]["payment_status"]
           source?: Database["public"]["Enums"]["order_source"]
+          source_detail?: string | null
           total_amount?: number
           updated_at?: string
         }
@@ -195,6 +197,7 @@ export type Database = {
           order_status?: Database["public"]["Enums"]["order_status"]
           payment_status?: Database["public"]["Enums"]["payment_status"]
           source?: Database["public"]["Enums"]["order_source"]
+          source_detail?: string | null
           total_amount?: number
           updated_at?: string
         }
