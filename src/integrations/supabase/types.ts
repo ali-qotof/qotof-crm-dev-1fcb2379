@@ -19,8 +19,10 @@ export type Database = {
           address: string | null
           city: string | null
           created_at: string
+          customer_stage: Database["public"]["Enums"]["customer_stage"]
           email: string | null
           full_name: string
+          governorate: string | null
           id: string
           notes: string | null
           primary_phone: string
@@ -32,8 +34,10 @@ export type Database = {
           address?: string | null
           city?: string | null
           created_at?: string
+          customer_stage?: Database["public"]["Enums"]["customer_stage"]
           email?: string | null
           full_name: string
+          governorate?: string | null
           id?: string
           notes?: string | null
           primary_phone: string
@@ -45,8 +49,10 @@ export type Database = {
           address?: string | null
           city?: string | null
           created_at?: string
+          customer_stage?: Database["public"]["Enums"]["customer_stage"]
           email?: string | null
           full_name?: string
+          governorate?: string | null
           id?: string
           notes?: string | null
           primary_phone?: string
@@ -328,6 +334,7 @@ export type Database = {
         | "woocommerce"
         | "referral"
         | "other"
+      customer_stage: "lead" | "active" | "inactive" | "vip" | "blocked"
       fulfillment_status:
         | "pending"
         | "packing"
@@ -480,6 +487,7 @@ export const Constants = {
         "referral",
         "other",
       ],
+      customer_stage: ["lead", "active", "inactive", "vip", "blocked"],
       fulfillment_status: [
         "pending",
         "packing",
