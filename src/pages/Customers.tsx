@@ -1,36 +1,22 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { Plus, Search, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import type { Database } from "@/integrations/supabase/types";
+import CustomerForm from "@/components/customers/CustomerForm";
 
-type CustomerSource = Database["public"]["Enums"]["customer_source"];
-
-const sourceLabels: Record<CustomerSource, string> = {
-  walk_in: "زيارة مباشرة",
-  phone: "هاتف",
-  whatsapp: "واتساب",
-  website: "الموقع",
-  woocommerce: "WooCommerce",
-  referral: "إحالة",
-  other: "أخرى",
+const stageLabels: Record<string, string> = {
+  lead: "محتمل", active: "نشط", inactive: "غير نشط", vip: "VIP", blocked: "محظور",
+};
+const stageColors: Record<string, string> = {
+  lead: "secondary", active: "default", inactive: "outline", vip: "default", blocked: "destructive",
 };
 
 function normalizePhone(phone: string): string {
@@ -42,20 +28,8 @@ function normalizePhone(phone: string): string {
 
 export default function Customers() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  // Form state
-  const [form, setForm] = useState({
-    full_name: "",
-    primary_phone: "",
-    city: "",
-    email: "",
-    address: "",
-    source: "phone" as CustomerSource,
-    notes: "",
-  });
 
   const { data: customers, isLoading } = useQuery({
     queryKey: ["customers", search],
@@ -78,50 +52,28 @@ export default function Customers() {
     },
   });
 
-  const createMutation = useMutation({
-    mutationFn: async () => {
-      if (!form.full_name || !form.primary_phone) {
-        throw new Error("الاسم ورقم الهاتف مطلوبان");
-      }
-      const normalized = normalizePhone(form.primary_phone);
-
-      // Check for duplicate phone
-      const { data: existing } = await supabase
-        .from("customers")
-        .select("id")
-        .eq("primary_phone_normalized", normalized)
-        .maybeSingle();
-
-      if (existing) throw new Error("رقم الهاتف مسجل بالفعل");
-
+  // Fetch order stats per customer
+  const customerIds = customers?.map(c => c.id) || [];
+  const { data: orderStats } = useQuery({
+    queryKey: ["customer-order-stats", customerIds],
+    queryFn: async () => {
+      if (customerIds.length === 0) return {};
       const { data, error } = await supabase
-        .from("customers")
-        .insert({
-          full_name: form.full_name,
-          primary_phone: form.primary_phone,
-          primary_phone_normalized: normalized,
-          city: form.city || null,
-          email: form.email || null,
-          address: form.address || null,
-          source: form.source,
-          notes: form.notes || null,
-        })
-        .select()
-        .single();
-
+        .from("orders")
+        .select("customer_id, created_at")
+        .in("customer_id", customerIds);
       if (error) throw error;
-      return data;
+
+      const stats: Record<string, { count: number; last_order_at: string | null }> = {};
+      for (const o of data || []) {
+        if (!stats[o.customer_id]) stats[o.customer_id] = { count: 0, last_order_at: null };
+        stats[o.customer_id].count++;
+        if (!stats[o.customer_id].last_order_at || o.created_at > stats[o.customer_id].last_order_at!)
+          stats[o.customer_id].last_order_at = o.created_at;
+      }
+      return stats;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["customers"] });
-      setDialogOpen(false);
-      setForm({ full_name: "", primary_phone: "", city: "", email: "", address: "", source: "phone", notes: "" });
-      toast.success("تم إضافة العميل بنجاح");
-      navigate(`/customers/${data.id}`);
-    },
-    onError: (err: Error) => {
-      toast.error(err.message);
-    },
+    enabled: customerIds.length > 0,
   });
 
   return (
@@ -136,61 +88,17 @@ export default function Customers() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-1" />
-              عميل جديد
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>إضافة عميل جديد</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <Label>الاسم *</Label>
-                <Input value={form.full_name} onChange={(e) => setForm(f => ({ ...f, full_name: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>رقم الهاتف *</Label>
-                <Input className="font-mono" placeholder="01XXXXXXXXX" value={form.primary_phone} onChange={(e) => setForm(f => ({ ...f, primary_phone: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>المدينة</Label>
-                <Input value={form.city} onChange={(e) => setForm(f => ({ ...f, city: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>البريد الإلكتروني</Label>
-                <Input type="email" value={form.email} onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>العنوان</Label>
-                <Input value={form.address} onChange={(e) => setForm(f => ({ ...f, address: e.target.value }))} />
-              </div>
-              <div className="space-y-1">
-                <Label>المصدر</Label>
-                <Select value={form.source} onValueChange={(v) => setForm(f => ({ ...f, source: v as CustomerSource }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(sourceLabels).map(([k, v]) => (
-                      <SelectItem key={k} value={k}>{v}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label>ملاحظات</Label>
-                <Textarea rows={2} value={form.notes} onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))} />
-              </div>
-              <Button className="w-full" onClick={() => createMutation.mutate()} disabled={createMutation.isPending}>
-                {createMutation.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
-                حفظ العميل
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button size="sm" onClick={() => setDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-1" />
+          عميل جديد
+        </Button>
       </div>
+
+      <CustomerForm
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSuccess={(id) => navigate(`/customers/${id}`)}
+      />
 
       <Card>
         <CardContent className="p-0">
@@ -199,26 +107,36 @@ export default function Customers() {
               <TableRow>
                 <TableHead>الاسم</TableHead>
                 <TableHead>الهاتف</TableHead>
-                <TableHead>المدينة</TableHead>
-                <TableHead>المصدر</TableHead>
-                <TableHead>تاريخ الإضافة</TableHead>
+                <TableHead>المحافظة</TableHead>
+                <TableHead>المرحلة</TableHead>
+                <TableHead>عدد الطلبات</TableHead>
+                <TableHead>آخر طلب</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow><TableCell colSpan={5} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></TableCell></TableRow>
               ) : customers?.length === 0 ? (
-                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">لا يوجد عملاء</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">لا يوجد عملاء</TableCell></TableRow>
               ) : (
-                customers?.map((c) => (
-                  <TableRow key={c.id} className="cursor-pointer" onClick={() => navigate(`/customers/${c.id}`)}>
-                    <TableCell className="font-medium">{c.full_name}</TableCell>
-                    <TableCell className="font-mono text-sm">{c.primary_phone}</TableCell>
-                    <TableCell>{c.city || "—"}</TableCell>
-                    <TableCell><Badge variant="outline">{sourceLabels[c.source]}</Badge></TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{new Date(c.created_at).toLocaleDateString("ar-EG")}</TableCell>
-                  </TableRow>
-                ))
+                customers?.map((c) => {
+                  const stats = orderStats?.[c.id];
+                  const stage = (c as any).customer_stage || "lead";
+                  return (
+                    <TableRow key={c.id} className="cursor-pointer" onClick={() => navigate(`/customers/${c.id}`)}>
+                      <TableCell className="font-medium">{c.full_name}</TableCell>
+                      <TableCell className="font-mono text-sm">{c.primary_phone}</TableCell>
+                      <TableCell>{(c as any).governorate || "—"}</TableCell>
+                      <TableCell>
+                        <Badge variant={stageColors[stage] as any}>{stageLabels[stage] || stage}</Badge>
+                      </TableCell>
+                      <TableCell className="text-center">{stats?.count || 0}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {stats?.last_order_at ? new Date(stats.last_order_at).toLocaleDateString("ar-EG") : "—"}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
