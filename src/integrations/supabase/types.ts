@@ -251,6 +251,124 @@ export type Database = {
         }
         Relationships: []
       }
+      shipment_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_status: Database["public"]["Enums"]["shipment_status"]
+          note: string | null
+          old_status: Database["public"]["Enums"]["shipment_status"] | null
+          shipment_id: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_status: Database["public"]["Enums"]["shipment_status"]
+          note?: string | null
+          old_status?: Database["public"]["Enums"]["shipment_status"] | null
+          shipment_id: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_status?: Database["public"]["Enums"]["shipment_status"]
+          note?: string | null
+          old_status?: Database["public"]["Enums"]["shipment_status"] | null
+          shipment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipment_status_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipment_status_history_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shipments: {
+        Row: {
+          carrier_name: string | null
+          created_at: string
+          created_by: string | null
+          delivered_at: string | null
+          id: string
+          last_status_note: string | null
+          order_id: string
+          out_for_delivery_at: string | null
+          return_received_at: string | null
+          shipment_status: Database["public"]["Enums"]["shipment_status"]
+          shipped_at: string | null
+          tracking_number: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          carrier_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          id?: string
+          last_status_note?: string | null
+          order_id: string
+          out_for_delivery_at?: string | null
+          return_received_at?: string | null
+          shipment_status?: Database["public"]["Enums"]["shipment_status"]
+          shipped_at?: string | null
+          tracking_number?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          carrier_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          id?: string
+          last_status_note?: string | null
+          order_id?: string
+          out_for_delivery_at?: string | null
+          return_received_at?: string | null
+          shipment_status?: Database["public"]["Enums"]["shipment_status"]
+          shipped_at?: string | null
+          tracking_number?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipments_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_users: {
         Row: {
           auth_user_id: string
@@ -363,6 +481,17 @@ export type Database = {
         | "paid"
         | "partially_refunded"
         | "refunded"
+      shipment_status:
+        | "pending"
+        | "label_created"
+        | "picked_up"
+        | "in_transit"
+        | "out_for_delivery"
+        | "delivered"
+        | "delivery_failed"
+        | "returned"
+        | "lost"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -528,6 +657,18 @@ export const Constants = {
         "paid",
         "partially_refunded",
         "refunded",
+      ],
+      shipment_status: [
+        "pending",
+        "label_created",
+        "picked_up",
+        "in_transit",
+        "out_for_delivery",
+        "delivered",
+        "delivery_failed",
+        "returned",
+        "lost",
+        "cancelled",
       ],
     },
   },
