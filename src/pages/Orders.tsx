@@ -21,28 +21,34 @@ type FulfillmentStatus = Database["public"]["Enums"]["fulfillment_status"];
 type OrderSource = Database["public"]["Enums"]["order_source"];
 
 const orderStatusLabels: Record<OrderStatus, string> = {
-  new: "جديد", confirmed: "مؤكد", processing: "قيد التجهيز",
-  shipped: "تم الشحن", delivered: "تم التسليم", cancelled: "ملغى",
+  draft: "مسودة", new: "جديد", pending_confirmation: "بانتظار التأكيد",
+  confirmed: "مؤكد", on_hold: "معلق", cancelled: "ملغى", completed: "مكتمل",
 };
 const paymentLabels: Record<PaymentStatus, string> = {
-  unpaid: "غير مدفوع", partial: "جزئي", paid: "مدفوع", refunded: "مرتجع",
+  cod_pending: "دفع عند الاستلام", unpaid: "غير مدفوع", paid: "مدفوع",
+  partially_refunded: "مرتجع جزئي", refunded: "مرتجع",
 };
 const fulfillmentLabels: Record<FulfillmentStatus, string> = {
-  pending: "قيد الانتظار", packing: "تعبئة", shipped: "تم الشحن", delivered: "تم التسليم", returned: "مرتجع",
+  not_started: "لم يبدأ", preparing: "قيد التحضير", packed: "تم التعبئة",
+  ready_to_ship: "جاهز للشحن", shipped: "تم الشحن", out_for_delivery: "خرج للتوصيل",
+  delivered: "تم التسليم", delivery_failed: "فشل التوصيل", returned: "مرتجع",
 };
 const sourceLabels: Record<OrderSource, string> = {
   manual: "يدوي", woocommerce: "WooCommerce", phone: "هاتف", whatsapp: "واتساب", other: "أخرى",
 };
 
 const orderStatusBadge: Record<OrderStatus, "default" | "secondary" | "destructive" | "outline"> = {
-  new: "secondary", confirmed: "default", processing: "default",
-  shipped: "outline", delivered: "outline", cancelled: "destructive",
+  draft: "outline", new: "secondary", pending_confirmation: "secondary",
+  confirmed: "default", on_hold: "outline", cancelled: "destructive", completed: "default",
 };
 const paymentBadge: Record<PaymentStatus, "default" | "secondary" | "destructive" | "outline"> = {
-  unpaid: "secondary", partial: "outline", paid: "default", refunded: "destructive",
+  cod_pending: "outline", unpaid: "secondary", paid: "default",
+  partially_refunded: "outline", refunded: "destructive",
 };
 const fulfillmentBadge: Record<FulfillmentStatus, "default" | "secondary" | "destructive" | "outline"> = {
-  pending: "secondary", packing: "outline", shipped: "default", delivered: "default", returned: "destructive",
+  not_started: "secondary", preparing: "outline", packed: "outline",
+  ready_to_ship: "outline", shipped: "default", out_for_delivery: "default",
+  delivered: "default", delivery_failed: "destructive", returned: "destructive",
 };
 
 export default function Orders() {
