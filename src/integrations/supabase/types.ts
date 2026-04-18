@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      crm_actions: {
+        Row: {
+          action_status: Database["public"]["Enums"]["crm_action_status"]
+          action_type: Database["public"]["Enums"]["crm_action_type"]
+          assigned_to: string | null
+          completed_at: string | null
+          completion_note: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          due_at: string | null
+          id: string
+          notes: string | null
+          order_id: string | null
+          priority: Database["public"]["Enums"]["priority_level"]
+          snoozed_until: string | null
+          ticket_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          action_status?: Database["public"]["Enums"]["crm_action_status"]
+          action_type: Database["public"]["Enums"]["crm_action_type"]
+          assigned_to?: string | null
+          completed_at?: string | null
+          completion_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          due_at?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          snoozed_until?: string | null
+          ticket_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          action_status?: Database["public"]["Enums"]["crm_action_status"]
+          action_type?: Database["public"]["Enums"]["crm_action_type"]
+          assigned_to?: string | null
+          completed_at?: string | null
+          completion_note?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          due_at?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          snoozed_until?: string | null
+          ticket_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_actions_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_actions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_actions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_actions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_actions_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           address: string | null
@@ -61,6 +154,77 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      interactions: {
+        Row: {
+          channel: Database["public"]["Enums"]["interaction_channel"]
+          created_at: string
+          customer_id: string
+          direction: Database["public"]["Enums"]["interaction_direction"]
+          id: string
+          occurred_at: string
+          order_id: string | null
+          outcome: string | null
+          recorded_by: string | null
+          summary: string
+          ticket_id: string | null
+        }
+        Insert: {
+          channel: Database["public"]["Enums"]["interaction_channel"]
+          created_at?: string
+          customer_id: string
+          direction?: Database["public"]["Enums"]["interaction_direction"]
+          id?: string
+          occurred_at?: string
+          order_id?: string | null
+          outcome?: string | null
+          recorded_by?: string | null
+          summary: string
+          ticket_id?: string | null
+        }
+        Update: {
+          channel?: Database["public"]["Enums"]["interaction_channel"]
+          created_at?: string
+          customer_id?: string
+          direction?: Database["public"]["Enums"]["interaction_direction"]
+          id?: string
+          occurred_at?: string
+          order_id?: string | null
+          outcome?: string | null
+          recorded_by?: string | null
+          summary?: string
+          ticket_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_recorded_by_fkey"
+            columns: ["recorded_by"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactions_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_items: {
         Row: {
@@ -491,6 +655,99 @@ export type Database = {
           },
         ]
       }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          description: string | null
+          due_at: string | null
+          id: string
+          notes: string | null
+          order_id: string | null
+          priority: Database["public"]["Enums"]["priority_level"]
+          status: Database["public"]["Enums"]["task_status"]
+          task_type: Database["public"]["Enums"]["task_type"]
+          ticket_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          status?: Database["public"]["Enums"]["task_status"]
+          task_type?: Database["public"]["Enums"]["task_type"]
+          ticket_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          description?: string | null
+          due_at?: string | null
+          id?: string
+          notes?: string | null
+          order_id?: string | null
+          priority?: Database["public"]["Enums"]["priority_level"]
+          status?: Database["public"]["Enums"]["task_status"]
+          task_type?: Database["public"]["Enums"]["task_type"]
+          ticket_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ticket_events: {
         Row: {
           actor_id: string | null
@@ -584,6 +841,21 @@ export type Database = {
         | "customer_service"
         | "operations"
         | "manager"
+      crm_action_status:
+        | "pending"
+        | "in_progress"
+        | "completed"
+        | "skipped"
+        | "snoozed"
+      crm_action_type:
+        | "first_order_followup"
+        | "post_delivery_check"
+        | "cross_sell"
+        | "upsell"
+        | "winback"
+        | "reactivation"
+        | "review_request"
+        | "complaint_recovery"
       customer_source:
         | "walk_in"
         | "phone"
@@ -603,6 +875,15 @@ export type Database = {
         | "delivered"
         | "delivery_failed"
         | "returned"
+      interaction_channel:
+        | "phone_call"
+        | "whatsapp"
+        | "sms"
+        | "email"
+        | "in_person"
+        | "messenger"
+        | "system_note"
+      interaction_direction: "inbound" | "outbound" | "internal"
       order_source: "manual" | "woocommerce" | "phone" | "whatsapp" | "other"
       order_status:
         | "draft"
@@ -618,6 +899,7 @@ export type Database = {
         | "paid"
         | "partially_refunded"
         | "refunded"
+      priority_level: "low" | "normal" | "high" | "urgent"
       shipment_status:
         | "pending"
         | "label_created"
@@ -629,6 +911,15 @@ export type Database = {
         | "returned"
         | "lost"
         | "cancelled"
+      task_status: "todo" | "in_progress" | "blocked" | "done" | "cancelled"
+      task_type:
+        | "call_customer"
+        | "confirm_order"
+        | "confirm_address"
+        | "followup_shipment"
+        | "resolve_complaint"
+        | "reactivation_call"
+        | "general_task"
       ticket_event_type:
         | "created"
         | "status_changed"
@@ -790,6 +1081,23 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "sales", "customer_service", "operations", "manager"],
+      crm_action_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "skipped",
+        "snoozed",
+      ],
+      crm_action_type: [
+        "first_order_followup",
+        "post_delivery_check",
+        "cross_sell",
+        "upsell",
+        "winback",
+        "reactivation",
+        "review_request",
+        "complaint_recovery",
+      ],
       customer_source: [
         "walk_in",
         "phone",
@@ -811,6 +1119,16 @@ export const Constants = {
         "delivery_failed",
         "returned",
       ],
+      interaction_channel: [
+        "phone_call",
+        "whatsapp",
+        "sms",
+        "email",
+        "in_person",
+        "messenger",
+        "system_note",
+      ],
+      interaction_direction: ["inbound", "outbound", "internal"],
       order_source: ["manual", "woocommerce", "phone", "whatsapp", "other"],
       order_status: [
         "draft",
@@ -828,6 +1146,7 @@ export const Constants = {
         "partially_refunded",
         "refunded",
       ],
+      priority_level: ["low", "normal", "high", "urgent"],
       shipment_status: [
         "pending",
         "label_created",
@@ -839,6 +1158,16 @@ export const Constants = {
         "returned",
         "lost",
         "cancelled",
+      ],
+      task_status: ["todo", "in_progress", "blocked", "done", "cancelled"],
+      task_type: [
+        "call_customer",
+        "confirm_order",
+        "confirm_address",
+        "followup_shipment",
+        "resolve_complaint",
+        "reactivation_call",
+        "general_task",
       ],
       ticket_event_type: [
         "created",
