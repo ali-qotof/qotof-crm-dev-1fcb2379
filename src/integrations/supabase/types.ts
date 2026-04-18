@@ -339,20 +339,30 @@ export type Database = {
         | "other"
       customer_stage: "lead" | "active" | "inactive" | "vip" | "blocked"
       fulfillment_status:
-        | "pending"
-        | "packing"
+        | "not_started"
+        | "preparing"
+        | "packed"
+        | "ready_to_ship"
         | "shipped"
+        | "out_for_delivery"
         | "delivered"
+        | "delivery_failed"
         | "returned"
       order_source: "manual" | "woocommerce" | "phone" | "whatsapp" | "other"
       order_status:
+        | "draft"
         | "new"
+        | "pending_confirmation"
         | "confirmed"
-        | "processing"
-        | "shipped"
-        | "delivered"
+        | "on_hold"
         | "cancelled"
-      payment_status: "unpaid" | "partial" | "paid" | "refunded"
+        | "completed"
+      payment_status:
+        | "cod_pending"
+        | "unpaid"
+        | "paid"
+        | "partially_refunded"
+        | "refunded"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -492,22 +502,33 @@ export const Constants = {
       ],
       customer_stage: ["lead", "active", "inactive", "vip", "blocked"],
       fulfillment_status: [
-        "pending",
-        "packing",
+        "not_started",
+        "preparing",
+        "packed",
+        "ready_to_ship",
         "shipped",
+        "out_for_delivery",
         "delivered",
+        "delivery_failed",
         "returned",
       ],
       order_source: ["manual", "woocommerce", "phone", "whatsapp", "other"],
       order_status: [
+        "draft",
         "new",
+        "pending_confirmation",
         "confirmed",
-        "processing",
-        "shipped",
-        "delivered",
+        "on_hold",
         "cancelled",
+        "completed",
       ],
-      payment_status: ["unpaid", "partial", "paid", "refunded"],
+      payment_status: [
+        "cod_pending",
+        "unpaid",
+        "paid",
+        "partially_refunded",
+        "refunded",
+      ],
     },
   },
 } as const
