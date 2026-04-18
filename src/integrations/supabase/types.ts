@@ -405,6 +405,143 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          closed_at: string | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          issue_type: Database["public"]["Enums"]["ticket_issue_type"]
+          opened_by: string | null
+          order_id: string | null
+          priority: Database["public"]["Enums"]["ticket_priority"]
+          resolution_note: string | null
+          resolved_at: string | null
+          subject: string
+          ticket_number: string
+          ticket_status: Database["public"]["Enums"]["ticket_status"]
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          issue_type?: Database["public"]["Enums"]["ticket_issue_type"]
+          opened_by?: string | null
+          order_id?: string | null
+          priority?: Database["public"]["Enums"]["ticket_priority"]
+          resolution_note?: string | null
+          resolved_at?: string | null
+          subject: string
+          ticket_number: string
+          ticket_status?: Database["public"]["Enums"]["ticket_status"]
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          closed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          issue_type?: Database["public"]["Enums"]["ticket_issue_type"]
+          opened_by?: string | null
+          order_id?: string | null
+          priority?: Database["public"]["Enums"]["ticket_priority"]
+          resolution_note?: string | null
+          resolved_at?: string | null
+          subject?: string
+          ticket_number?: string
+          ticket_status?: Database["public"]["Enums"]["ticket_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_opened_by_fkey"
+            columns: ["opened_by"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_tickets_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: Database["public"]["Enums"]["ticket_event_type"]
+          id: string
+          message: string | null
+          metadata: Json | null
+          new_value: string | null
+          old_value: string | null
+          ticket_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: Database["public"]["Enums"]["ticket_event_type"]
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          ticket_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: Database["public"]["Enums"]["ticket_event_type"]
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "staff_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_events_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -492,6 +629,39 @@ export type Database = {
         | "returned"
         | "lost"
         | "cancelled"
+      ticket_event_type:
+        | "created"
+        | "status_changed"
+        | "priority_changed"
+        | "assigned"
+        | "unassigned"
+        | "comment"
+        | "internal_note"
+        | "attachment"
+        | "resolved"
+        | "reopened"
+        | "closed"
+      ticket_issue_type:
+        | "late_delivery"
+        | "wrong_item"
+        | "missing_item"
+        | "damaged_item"
+        | "quality_issue"
+        | "refund_request"
+        | "exchange_request"
+        | "courier_issue"
+        | "general_complaint"
+        | "inquiry"
+      ticket_priority: "low" | "normal" | "high" | "urgent"
+      ticket_status:
+        | "new"
+        | "open"
+        | "waiting_customer"
+        | "waiting_internal"
+        | "escalated"
+        | "resolved"
+        | "closed"
+        | "reopened"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -669,6 +839,42 @@ export const Constants = {
         "returned",
         "lost",
         "cancelled",
+      ],
+      ticket_event_type: [
+        "created",
+        "status_changed",
+        "priority_changed",
+        "assigned",
+        "unassigned",
+        "comment",
+        "internal_note",
+        "attachment",
+        "resolved",
+        "reopened",
+        "closed",
+      ],
+      ticket_issue_type: [
+        "late_delivery",
+        "wrong_item",
+        "missing_item",
+        "damaged_item",
+        "quality_issue",
+        "refund_request",
+        "exchange_request",
+        "courier_issue",
+        "general_complaint",
+        "inquiry",
+      ],
+      ticket_priority: ["low", "normal", "high", "urgent"],
+      ticket_status: [
+        "new",
+        "open",
+        "waiting_customer",
+        "waiting_internal",
+        "escalated",
+        "resolved",
+        "closed",
+        "reopened",
       ],
     },
   },
